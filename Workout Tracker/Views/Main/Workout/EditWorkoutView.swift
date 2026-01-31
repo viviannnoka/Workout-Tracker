@@ -23,7 +23,13 @@ struct EditWorkoutView: View {
                 var sets: [SetData] = []
                 if let exerciseSets = exercise.sets {
                     sets = exerciseSets.sorted { $0.setNumber < $1.setNumber }.map { set in
-                        SetData(weight: set.weight, reps: set.reps)
+                        SetData(
+                            setType: set.setTypeEnum,
+                            weight: set.weight,
+                            reps: set.reps,
+                            level: set.level,
+                            duration: set.duration
+                        )
                     }
                 }
                 exercisesData.append(ExerciseData(name: exercise.exerciseName, notes: exercise.notes, sets: sets))
@@ -116,9 +122,12 @@ struct EditWorkoutView: View {
 
             for (index, setData) in exerciseData.sets.enumerated() {
                 let set = ExerciseSet(
+                    setNumber: index + 1,
+                    setType: setData.setType,
                     weight: setData.weight,
                     reps: setData.reps,
-                    setNumber: index + 1
+                    level: setData.level,
+                    duration: setData.duration
                 )
                 set.exercise = exercise
                 modelContext.insert(set)

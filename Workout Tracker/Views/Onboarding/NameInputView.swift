@@ -16,7 +16,7 @@ struct NameInputView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             CustomTextField(
-                title: "Name",
+                title: "Name *",
                 placeholder: "Enter your name",
                 text: $viewModel.name
             )

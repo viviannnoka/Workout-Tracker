@@ -16,7 +16,7 @@ struct AgeInputView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             CustomTextField(
-                title: "Age",
+                title: "Age *",
                 placeholder: "Enter your age",
                 text: $viewModel.age,
                 keyboardType: .numberPad

@@ -16,7 +16,7 @@ struct HeightWeightInputView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack(alignment: .leading, spacing: AppSpacing.small) {
-                Text("Height")
+                Text("Height *")
                     .font(AppFonts.headline)
                     .foregroundColor(.primary)
 
@@ -36,7 +36,7 @@ struct HeightWeightInputView: View {
             }
 
             VStack(alignment: .leading, spacing: AppSpacing.small) {
-                Text("Weight")
+                Text("Weight *")
                     .font(AppFonts.headline)
                     .foregroundColor(.primary)
 

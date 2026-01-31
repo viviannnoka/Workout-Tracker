@@ -27,7 +27,7 @@ struct NewWorkoutView: View {
                     .cornerRadius(12)
 
                     VStack(alignment: .leading, spacing: AppSpacing.small) {
-                        Text("Exercise Name")
+                        Text("Exercise Name *")
                             .font(AppFonts.headline)
 
                         HStack {
@@ -106,9 +106,12 @@ struct NewWorkoutView: View {
 
             for (index, setData) in exerciseData.sets.enumerated() {
                 let set = ExerciseSet(
+                    setNumber: index + 1,
+                    setType: setData.setType,
                     weight: setData.weight,
                     reps: setData.reps,
-                    setNumber: index + 1
+                    level: setData.level,
+                    duration: setData.duration
                 )
                 set.exercise = exercise
                 modelContext.insert(set)
@@ -133,6 +136,21 @@ struct ExerciseData: Identifiable {
 
 struct SetData: Identifiable {
     let id = UUID()
-    var weight: Double
-    var reps: Int
+    var setType: SetType
+
+    // For weight/reps sets
+    var weight: Double?
+    var reps: Int?
+
+    // For level/duration sets
+    var level: Int?
+    var duration: Double? // in seconds
+
+    init(setType: SetType, weight: Double? = nil, reps: Int? = nil, level: Int? = nil, duration: Double? = nil) {
+        self.setType = setType
+        self.weight = weight
+        self.reps = reps
+        self.level = level
+        self.duration = duration
+    }
 }

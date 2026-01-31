@@ -96,9 +96,15 @@ struct ExerciseRowView: View {
     private var addSetSheet: some View {
         NavigationStack {
             AddSetView(
-                onAdd: { weight, reps, count in
+                onAdd: { setType, weight, reps, level, duration, count in
                     for _ in 0..<count {
-                        let newSet = SetData(weight: weight, reps: reps)
+                        let newSet = SetData(
+                            setType: setType,
+                            weight: weight,
+                            reps: reps,
+                            level: level,
+                            duration: duration
+                        )
                         exercise.sets.append(newSet)
                     }
                     showingAddSet = false
@@ -120,38 +126,87 @@ struct ExerciseRowView: View {
 }
 
 struct AddSetView: View {
-    let onAdd: (Double, Int, Int) -> Void
+    let onAdd: (SetType, Double?, Int?, Int?, Double?, Int) -> Void
 
+    @State private var setType: SetType = .weightReps
     @State private var weight: String = ""
     @State private var reps: String = ""
+    @State private var level: String = ""
+    @State private var duration: String = ""
     @State private var numberOfSets: String = "1"
     @State private var useBulkEntry = false
 
     var body: some View {
         VStack(spacing: AppSpacing.large) {
-            CustomTextField(
-                title: "Weight (kg)",
-                placeholder: "Enter weight",
-                text: $weight,
-                keyboardType: .decimalPad
-            )
+            Picker("Set Type *", selection: $setType) {
+                Text("Weight & Reps").tag(SetType.weightReps)
+                Text("Level & Duration").tag(SetType.levelDuration)
+            }
+            .pickerStyle(.segmented)
 
-            CustomTextField(
-                title: "Reps",
-                placeholder: "Enter reps",
-                text: $reps,
-                keyboardType: .numberPad
-            )
+            if setType == .weightReps {
+                VStack(alignment: .leading, spacing: AppSpacing.small) {
+                    CustomTextField(
+                        title: "Weight (kg) *",
+                        placeholder: "Enter weight",
+                        text: $weight,
+                        keyboardType: .decimalPad
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(weight.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                    )
+
+                    CustomTextField(
+                        title: "Reps *",
+                        placeholder: "Enter reps",
+                        text: $reps,
+                        keyboardType: .numberPad
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(reps.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                    )
+                }
+            } else {
+                VStack(alignment: .leading, spacing: AppSpacing.small) {
+                    CustomTextField(
+                        title: "Level *",
+                        placeholder: "Enter level",
+                        text: $level,
+                        keyboardType: .numberPad
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(level.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                    )
+
+                    CustomTextField(
+                        title: "Duration (seconds) *",
+                        placeholder: "Enter duration",
+                        text: $duration,
+                        keyboardType: .decimalPad
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(duration.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                    )
+                }
+            }
 
             Toggle("Apply to multiple sets", isOn: $useBulkEntry)
                 .font(AppFonts.body)
 
             if useBulkEntry {
                 CustomTextField(
-                    title: "Number of Sets",
+                    title: "Number of Sets *",
                     placeholder: "How many sets?",
                     text: $numberOfSets,
                     keyboardType: .numberPad
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(numberOfSets.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
                 )
             }
 
@@ -159,13 +214,7 @@ struct AddSetView: View {
 
             PrimaryButton(
                 title: useBulkEntry ? "Add \(numberOfSets) Sets" : "Add Set",
-                action: {
-                    if let weightValue = Double(weight),
-                       let repsValue = Int(reps),
-                       let setsCount = Int(numberOfSets) {
-                        onAdd(weightValue, repsValue, useBulkEntry ? setsCount : 1)
-                    }
-                },
+                action: addSet,
                 isEnabled: isValid
             )
         }
@@ -174,10 +223,31 @@ struct AddSetView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
+    private func addSet() {
+        let setsCount = useBulkEntry ? (Int(numberOfSets) ?? 1) : 1
+
+        if setType == .weightReps {
+            if let weightValue = Double(weight), let repsValue = Int(reps) {
+                onAdd(setType, weightValue, repsValue, nil, nil, setsCount)
+            }
+        } else {
+            if let levelValue = Int(level), let durationValue = Double(duration) {
+                onAdd(setType, nil, nil, levelValue, durationValue, setsCount)
+            }
+        }
+    }
+
     private var isValid: Bool {
-        guard let weightValue = Double(weight),
-              let repsValue = Int(reps) else {
-            return false
+        if setType == .weightReps {
+            guard let weightValue = Double(weight), weightValue > 0,
+                  let repsValue = Int(reps), repsValue > 0 else {
+                return false
+            }
+        } else {
+            guard let levelValue = Int(level), levelValue > 0,
+                  let durationValue = Double(duration), durationValue > 0 else {
+                return false
+            }
         }
 
         if useBulkEntry {
@@ -186,7 +256,7 @@ struct AddSetView: View {
             }
         }
 
-        return weightValue > 0 && repsValue > 0
+        return true
     }
 }
 
