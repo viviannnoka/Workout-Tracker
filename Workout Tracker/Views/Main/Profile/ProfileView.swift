@@ -9,6 +9,13 @@ struct ProfileView: View {
         users.first
     }
 
+    var uniqueWorkoutDates: Int {
+        guard let user = user, let workouts = user.workouts else { return 0 }
+        let calendar = Calendar.current
+        let uniqueDates = Set(workouts.map { calendar.startOfDay(for: $0.date) })
+        return uniqueDates.count
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -28,26 +35,19 @@ struct ProfileView: View {
 
                         VStack(spacing: AppSpacing.medium) {
                             ProfileInfoRow(label: "Age", value: "\(user.age) years")
-                            ProfileInfoRow(label: "Height", value: String(format: "%.1f cm", user.height))
-                            ProfileInfoRow(label: "Weight", value: String(format: "%.1f kg", user.weight))
+                            ProfileInfoRow(label: "Height", value: String(format: "%.1f %@", user.height, user.heightUnit))
+                            ProfileInfoRow(label: "Weight", value: String(format: "%.1f %@", user.weight, user.weightUnit))
                         }
                         .padding()
                         .background(AppColors.secondaryBackground)
                         .cornerRadius(12)
 
-                        if let workouts = user.workouts {
-                            VStack(spacing: AppSpacing.medium) {
-                                ProfileInfoRow(label: "Total Workouts", value: "\(workouts.count)")
-                            }
-                            .padding()
-                            .background(AppColors.secondaryBackground)
-                            .cornerRadius(12)
+                        VStack(spacing: AppSpacing.medium) {
+                            ProfileInfoRow(label: "Workout Days", value: "\(uniqueWorkoutDates)")
                         }
-
-                        PrimaryButton(title: "Edit Profile") {
-                            showingEditProfile = true
-                        }
-                        .padding(.top, AppSpacing.large)
+                        .padding()
+                        .background(AppColors.secondaryBackground)
+                        .cornerRadius(12)
                     } else {
                         Text("No profile found")
                             .font(AppFonts.body)
@@ -58,6 +58,13 @@ struct ProfileView: View {
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingEditProfile = true }) {
+                        Image(systemName: "pencil")
+                    }
+                }
+            }
             .sheet(isPresented: $showingEditProfile) {
                 if let user = user {
                     EditProfileView(user: user)

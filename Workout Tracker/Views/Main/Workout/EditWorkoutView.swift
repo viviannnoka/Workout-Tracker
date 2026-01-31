@@ -1,15 +1,36 @@
 import SwiftUI
 import SwiftData
 
-struct NewWorkoutView: View {
+struct EditWorkoutView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Query private var users: [UserProfile]
 
-    @State private var workoutDate = Date()
-    @State private var currentExerciseName: String = ""
+    let workout: WorkoutSession
+
+    @State private var workoutDate: Date
+    @State private var workoutNotes: String
     @State private var exercises: [ExerciseData] = []
-    @State private var workoutNotes: String = ""
+
+    init(workout: WorkoutSession) {
+        self.workout = workout
+        _workoutDate = State(initialValue: workout.date)
+        _workoutNotes = State(initialValue: workout.notes)
+
+        // Convert SwiftData exercises to ExerciseData
+        var exercisesData: [ExerciseData] = []
+        if let workoutExercises = workout.exercises {
+            for exercise in workoutExercises {
+                var sets: [SetData] = []
+                if let exerciseSets = exercise.sets {
+                    sets = exerciseSets.sorted { $0.setNumber < $1.setNumber }.map { set in
+                        SetData(weight: set.weight, reps: set.reps)
+                    }
+                }
+                exercisesData.append(ExerciseData(name: exercise.exerciseName, notes: exercise.notes, sets: sets))
+            }
+        }
+        _exercises = State(initialValue: exercisesData)
+    }
 
     var body: some View {
         NavigationStack {
@@ -25,23 +46,6 @@ struct NewWorkoutView: View {
                     .padding()
                     .background(AppColors.secondaryBackground)
                     .cornerRadius(12)
-
-                    VStack(alignment: .leading, spacing: AppSpacing.small) {
-                        Text("Exercise Name")
-                            .font(AppFonts.headline)
-
-                        HStack {
-                            TextField("e.g., Bench Press", text: $currentExerciseName)
-                                .textFieldStyle(.roundedBorder)
-
-                            Button(action: addExercise) {
-                                Image(systemName: "plus.circle.fill")
-                                    .foregroundColor(AppColors.primary)
-                                    .font(.title2)
-                            }
-                            .disabled(currentExerciseName.trimmingCharacters(in: .whitespaces).isEmpty)
-                        }
-                    }
 
                     if !exercises.isEmpty {
                         ForEach(exercises.indices, id: \.self) { index in
@@ -64,7 +68,7 @@ struct NewWorkoutView: View {
                     }
 
                     PrimaryButton(
-                        title: "Save Workout",
+                        title: "Save Changes",
                         action: saveWorkout,
                         isEnabled: !exercises.isEmpty && exercises.allSatisfy { !$0.sets.isEmpty }
                     )
@@ -72,7 +76,7 @@ struct NewWorkoutView: View {
                 }
                 .padding()
             }
-            .navigationTitle("New Workout")
+            .navigationTitle("Edit Workout")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -84,22 +88,28 @@ struct NewWorkoutView: View {
         }
     }
 
-    private func addExercise() {
-        let exercise = ExerciseData(name: currentExerciseName.trimmingCharacters(in: .whitespaces))
-        exercises.append(exercise)
-        currentExerciseName = ""
-    }
-
     private func deleteExercise(at index: Int) {
         exercises.remove(at: index)
     }
 
     private func saveWorkout() {
-        guard let user = users.first else { return }
+        // Update workout date and notes
+        workout.date = workoutDate
+        workout.notes = workoutNotes
 
-        let workout = WorkoutSession(date: workoutDate, notes: workoutNotes)
-        workout.user = user
+        // Delete all existing exercises and sets
+        if let existingExercises = workout.exercises {
+            for exercise in existingExercises {
+                if let sets = exercise.sets {
+                    for set in sets {
+                        modelContext.delete(set)
+                    }
+                }
+                modelContext.delete(exercise)
+            }
+        }
 
+        // Add updated exercises
         for exerciseData in exercises {
             let exercise = ExerciseEntry(exerciseName: exerciseData.name, notes: exerciseData.notes)
             exercise.workoutSession = workout
@@ -117,22 +127,11 @@ struct NewWorkoutView: View {
             modelContext.insert(exercise)
         }
 
-        modelContext.insert(workout)
-        try? modelContext.save()
-
-        dismiss()
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            print("Error saving workout: \(error)")
+        }
     }
-}
-
-struct ExerciseData: Identifiable {
-    let id = UUID()
-    var name: String
-    var notes: String = ""
-    var sets: [SetData] = []
-}
-
-struct SetData: Identifiable {
-    let id = UUID()
-    var weight: Double
-    var reps: Int
 }

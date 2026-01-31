@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var selectedTab = 1
+    @State private var selectedTab = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -11,17 +11,11 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
-            NewWorkoutView()
-                .tabItem {
-                    Label("New Workout", systemImage: "plus.circle.fill")
-                }
-                .tag(1)
-
             ProfileView()
                 .tabItem {
                     Label("Profile", systemImage: "person.circle")
                 }
-                .tag(2)
+                .tag(1)
         }
     }
 }

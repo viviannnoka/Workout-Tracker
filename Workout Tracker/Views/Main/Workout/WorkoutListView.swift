@@ -4,6 +4,15 @@ import SwiftData
 struct WorkoutListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \WorkoutSession.date, order: .reverse) private var workouts: [WorkoutSession]
+    @State private var showingNewWorkout = false
+
+    var groupedWorkouts: [(Date, [WorkoutSession])] {
+        let calendar = Calendar.current
+        let grouped = Dictionary(grouping: workouts) { workout in
+            calendar.startOfDay(for: workout.date)
+        }
+        return grouped.sorted { $0.key > $1.key }
+    }
 
     var body: some View {
         NavigationStack {
@@ -12,17 +21,27 @@ struct WorkoutListView: View {
                     emptyStateView
                 } else {
                     List {
-                        ForEach(workouts) { workout in
-                            NavigationLink(destination: WorkoutDetailView(workout: workout)) {
-                                WorkoutRowView(workout: workout)
+                        ForEach(groupedWorkouts, id: \.0) { date, dayWorkouts in
+                            NavigationLink(destination: WorkoutDetailView(date: date, workouts: dayWorkouts)) {
+                                WorkoutDateRowView(date: date, workouts: dayWorkouts)
                             }
                         }
-                        .onDelete(perform: deleteWorkouts)
+                        .onDelete(perform: deleteWorkoutGroup)
                     }
                 }
             }
             .navigationTitle("Workout History")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingNewWorkout = true }) {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingNewWorkout) {
+                NewWorkoutView()
+            }
         }
     }
 
@@ -38,7 +57,7 @@ struct WorkoutListView: View {
                 .font(AppFonts.title)
                 .foregroundColor(.secondary)
 
-            Text("Start logging your workouts to see them here")
+            Text("Tap the + button to log your first workout")
                 .font(AppFonts.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -46,36 +65,49 @@ struct WorkoutListView: View {
         .padding(AppSpacing.extraLarge)
     }
 
-    private func deleteWorkouts(at offsets: IndexSet) {
+    private func deleteWorkoutGroup(at offsets: IndexSet) {
         for index in offsets {
-            modelContext.delete(workouts[index])
+            let (_, workoutsToDelete) = groupedWorkouts[index]
+            for workout in workoutsToDelete {
+                modelContext.delete(workout)
+            }
         }
     }
 }
 
-struct WorkoutRowView: View {
-    let workout: WorkoutSession
+struct WorkoutDateRowView: View {
+    let date: Date
+    let workouts: [WorkoutSession]
+
+    var sortedWorkouts: [WorkoutSession] {
+        workouts.sorted { $0.date > $1.date }
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.small) {
-            Text(workout.date, style: .date)
+        VStack(alignment: .leading, spacing: AppSpacing.medium) {
+            Text(date, style: .date)
                 .font(AppFonts.headline)
 
-            Text(workout.date, style: .time)
-                .font(AppFonts.caption)
-                .foregroundColor(.secondary)
+            ForEach(Array(sortedWorkouts.enumerated()), id: \.element.id) { index, workout in
+                VStack(alignment: .leading, spacing: AppSpacing.small) {
+                    HStack {
+                        Text("Session \(index + 1)")
+                            .font(AppFonts.body)
+                            .fontWeight(.semibold)
 
-            if let exercises = workout.exercises, !exercises.isEmpty {
-                Text("\(exercises.count) exercise\(exercises.count == 1 ? "" : "s")")
-                    .font(AppFonts.body)
-                    .foregroundColor(.secondary)
-            }
+                        Text(workout.date, style: .time)
+                            .font(AppFonts.caption)
+                            .foregroundColor(.secondary)
+                    }
 
-            if !workout.notes.isEmpty {
-                Text(workout.notes)
-                    .font(AppFonts.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
+                    if let exercises = workout.exercises, !exercises.isEmpty {
+                        Text(exercises.map { $0.exerciseName }.joined(separator: ", "))
+                            .font(AppFonts.body)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                .padding(.leading, AppSpacing.medium)
             }
         }
         .padding(.vertical, AppSpacing.extraSmall)

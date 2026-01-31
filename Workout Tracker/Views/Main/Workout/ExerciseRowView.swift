@@ -5,6 +5,7 @@ struct ExerciseRowView: View {
     let onDelete: () -> Void
 
     @State private var showingAddSet = false
+    @State private var showingEditExercise = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
@@ -14,10 +15,28 @@ struct ExerciseRowView: View {
 
                 Spacer()
 
+                Button(action: { showingEditExercise = true }) {
+                    Image(systemName: "pencil")
+                        .foregroundColor(AppColors.primary)
+                }
+
                 Button(action: onDelete) {
                     Image(systemName: "trash")
                         .foregroundColor(.red)
                 }
+            }
+
+            VStack(alignment: .leading, spacing: AppSpacing.small) {
+                Text("Exercise Notes")
+                    .font(AppFonts.caption)
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
+
+                TextEditor(text: $exercise.notes)
+                    .frame(height: 60)
+                    .padding(AppSpacing.extraSmall)
+                    .background(AppColors.background)
+                    .cornerRadius(8)
             }
 
             if exercise.sets.isEmpty {
@@ -51,15 +70,40 @@ struct ExerciseRowView: View {
         .sheet(isPresented: $showingAddSet) {
             addSetSheet
         }
+        .sheet(isPresented: $showingEditExercise) {
+            editExerciseSheet
+        }
+    }
+
+    private var editExerciseSheet: some View {
+        NavigationStack {
+            EditExerciseView(exercise: $exercise)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            showingEditExercise = false
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") {
+                            showingEditExercise = false
+                        }
+                    }
+                }
+        }
     }
 
     private var addSetSheet: some View {
         NavigationStack {
-            AddSetView(onAdd: { weight, reps in
-                let newSet = SetData(weight: weight, reps: reps)
-                exercise.sets.append(newSet)
-                showingAddSet = false
-            })
+            AddSetView(
+                onAdd: { weight, reps, count in
+                    for _ in 0..<count {
+                        let newSet = SetData(weight: weight, reps: reps)
+                        exercise.sets.append(newSet)
+                    }
+                    showingAddSet = false
+                }
+            )
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -76,9 +120,12 @@ struct ExerciseRowView: View {
 }
 
 struct AddSetView: View {
+    let onAdd: (Double, Int, Int) -> Void
+
     @State private var weight: String = ""
     @State private var reps: String = ""
-    let onAdd: (Double, Int) -> Void
+    @State private var numberOfSets: String = "1"
+    @State private var useBulkEntry = false
 
     var body: some View {
         VStack(spacing: AppSpacing.large) {
@@ -96,13 +143,27 @@ struct AddSetView: View {
                 keyboardType: .numberPad
             )
 
+            Toggle("Apply to multiple sets", isOn: $useBulkEntry)
+                .font(AppFonts.body)
+
+            if useBulkEntry {
+                CustomTextField(
+                    title: "Number of Sets",
+                    placeholder: "How many sets?",
+                    text: $numberOfSets,
+                    keyboardType: .numberPad
+                )
+            }
+
             Spacer()
 
             PrimaryButton(
-                title: "Add Set",
+                title: useBulkEntry ? "Add \(numberOfSets) Sets" : "Add Set",
                 action: {
-                    if let weightValue = Double(weight), let repsValue = Int(reps) {
-                        onAdd(weightValue, repsValue)
+                    if let weightValue = Double(weight),
+                       let repsValue = Int(reps),
+                       let setsCount = Int(numberOfSets) {
+                        onAdd(weightValue, repsValue, useBulkEntry ? setsCount : 1)
                     }
                 },
                 isEnabled: isValid
@@ -114,9 +175,49 @@ struct AddSetView: View {
     }
 
     private var isValid: Bool {
-        guard let weightValue = Double(weight), let repsValue = Int(reps) else {
+        guard let weightValue = Double(weight),
+              let repsValue = Int(reps) else {
             return false
         }
+
+        if useBulkEntry {
+            guard let setsCount = Int(numberOfSets), setsCount > 0 && setsCount <= 20 else {
+                return false
+            }
+        }
+
         return weightValue > 0 && repsValue > 0
+    }
+}
+
+struct EditExerciseView: View {
+    @Binding var exercise: ExerciseData
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: AppSpacing.large) {
+                CustomTextField(
+                    title: "Exercise Name",
+                    placeholder: "e.g., Bench Press",
+                    text: $exercise.name
+                )
+
+                VStack(alignment: .leading, spacing: AppSpacing.small) {
+                    Text("Exercise Notes")
+                        .font(AppFonts.headline)
+
+                    TextEditor(text: $exercise.notes)
+                        .frame(height: 100)
+                        .padding(AppSpacing.small)
+                        .background(AppColors.secondaryBackground)
+                        .cornerRadius(8)
+                }
+
+                Spacer()
+            }
+            .padding()
+        }
+        .navigationTitle("Edit Exercise")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

@@ -2,7 +2,20 @@ import SwiftUI
 import SwiftData
 
 struct WorkoutDetailView: View {
-    let workout: WorkoutSession
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+
+    let date: Date
+    let workouts: [WorkoutSession]
+
+    @State private var workoutToDelete: WorkoutSession?
+    @State private var showingDeleteAlert = false
+    @State private var workoutToEdit: WorkoutSession?
+    @State private var showingEditWorkout = false
+
+    var sortedWorkouts: [WorkoutSession] {
+        workouts.sorted { $0.date > $1.date }
+    }
 
     var body: some View {
         ScrollView {
@@ -13,43 +26,82 @@ struct WorkoutDetailView: View {
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
 
-                    Text(workout.date, style: .date)
+                    Text(date, style: .date)
                         .font(AppFonts.title)
-
-                    Text(workout.date, style: .time)
-                        .font(AppFonts.body)
-                        .foregroundColor(.secondary)
                 }
 
-                if !workout.notes.isEmpty {
-                    VStack(alignment: .leading, spacing: AppSpacing.small) {
-                        Text("Notes")
-                            .font(AppFonts.caption)
-                            .foregroundColor(.secondary)
-                            .textCase(.uppercase)
-
-                        Text(workout.notes)
-                            .font(AppFonts.body)
-                    }
-                }
-
-                if let exercises = workout.exercises, !exercises.isEmpty {
+                ForEach(sortedWorkouts) { workout in
                     VStack(alignment: .leading, spacing: AppSpacing.medium) {
-                        Text("Exercises")
-                            .font(AppFonts.caption)
-                            .foregroundColor(.secondary)
-                            .textCase(.uppercase)
+                        HStack {
+                            Text(workout.date, style: .time)
+                                .font(AppFonts.headline)
+                                .foregroundColor(.primary)
 
-                        ForEach(exercises) { exercise in
-                            ExerciseDetailView(exercise: exercise)
+                            Spacer()
+
+                            Button(action: {
+                                workoutToEdit = workout
+                                showingEditWorkout = true
+                            }) {
+                                Image(systemName: "pencil")
+                                    .foregroundColor(AppColors.primary)
+                            }
+
+                            Button(action: {
+                                workoutToDelete = workout
+                                showingDeleteAlert = true
+                            }) {
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
+                            }
+                        }
+
+                        if !workout.notes.isEmpty {
+                            Text(workout.notes)
+                                .font(AppFonts.body)
+                                .foregroundColor(.secondary)
+                                .padding(.bottom, AppSpacing.small)
+                        }
+
+                        if let exercises = workout.exercises, !exercises.isEmpty {
+                            ForEach(exercises) { exercise in
+                                ExerciseDetailView(exercise: exercise)
+                            }
                         }
                     }
+                    .padding()
+                    .background(AppColors.secondaryBackground)
+                    .cornerRadius(12)
                 }
             }
             .padding()
         }
         .navigationTitle("Workout Details")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Delete Workout?", isPresented: $showingDeleteAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                deleteWorkout()
+            }
+        } message: {
+            Text("This workout session will be permanently deleted.")
+        }
+        .sheet(isPresented: $showingEditWorkout) {
+            if let workout = workoutToEdit {
+                EditWorkoutView(workout: workout)
+            }
+        }
+    }
+
+    private func deleteWorkout() {
+        guard let workout = workoutToDelete else { return }
+        modelContext.delete(workout)
+        try? modelContext.save()
+
+        // If this was the last workout for this date, go back
+        if workouts.count == 1 {
+            dismiss()
+        }
     }
 }
 
@@ -60,6 +112,13 @@ struct ExerciseDetailView: View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
             Text(exercise.exerciseName)
                 .font(AppFonts.title)
+
+            if !exercise.notes.isEmpty {
+                Text(exercise.notes)
+                    .font(AppFonts.body)
+                    .foregroundColor(.secondary)
+                    .italic()
+            }
 
             if let sets = exercise.sets, !sets.isEmpty {
                 VStack(spacing: AppSpacing.small) {
