@@ -45,9 +45,11 @@ struct EditWorkoutView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.medium) {
                         DatePicker("Date", selection: $workoutDate, displayedComponents: [.date])
                             .datePickerStyle(.compact)
+                            .colorScheme(.dark)
 
                         DatePicker("Time", selection: $workoutDate, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.compact)
+                            .colorScheme(.dark)
                     }
                     .padding()
                     .background(AppColors.secondaryBackground)
@@ -65,12 +67,18 @@ struct EditWorkoutView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.small) {
                         Text("Workout Notes")
                             .font(AppFonts.headline)
+                            .foregroundColor(AppColors.textPrimary)
 
                         TextEditor(text: $workoutNotes)
+                            .foregroundColor(AppColors.textPrimary)
                             .frame(height: 100)
                             .padding(AppSpacing.small)
                             .background(AppColors.secondaryBackground)
                             .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(AppColors.border, lineWidth: 1)
+                            )
                     }
 
                     PrimaryButton(
@@ -82,6 +90,7 @@ struct EditWorkoutView: View {
                 }
                 .padding()
             }
+            .background(AppColors.background)
             .navigationTitle("Edit Workout")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -89,6 +98,7 @@ struct EditWorkoutView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(AppColors.textPrimary)
                 }
             }
         }

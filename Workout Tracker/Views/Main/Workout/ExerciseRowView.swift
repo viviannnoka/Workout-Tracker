@@ -275,18 +275,25 @@ struct EditExerciseView: View {
                 VStack(alignment: .leading, spacing: AppSpacing.small) {
                     Text("Exercise Notes")
                         .font(AppFonts.headline)
+                        .foregroundColor(AppColors.textPrimary)
 
                     TextEditor(text: $exercise.notes)
+                        .foregroundColor(AppColors.textPrimary)
                         .frame(height: 100)
                         .padding(AppSpacing.small)
                         .background(AppColors.secondaryBackground)
                         .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(AppColors.border, lineWidth: 1)
+                        )
                 }
 
                 Spacer()
             }
             .padding()
         }
+        .background(AppColors.background)
         .navigationTitle("Edit Exercise")
         .navigationBarTitleDisplayMode(.inline)
     }

@@ -23,11 +23,12 @@ struct WorkoutDetailView: View {
                 VStack(alignment: .leading, spacing: AppSpacing.small) {
                     Text("Date")
                         .font(AppFonts.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(AppColors.textSecondary)
                         .textCase(.uppercase)
 
                     Text(date, style: .date)
                         .font(AppFonts.title)
+                        .foregroundColor(AppColors.textPrimary)
                 }
 
                 ForEach(sortedWorkouts) { workout in
@@ -35,7 +36,7 @@ struct WorkoutDetailView: View {
                         HStack {
                             Text(workout.date, style: .time)
                                 .font(AppFonts.headline)
-                                .foregroundColor(.primary)
+                                .foregroundColor(AppColors.textPrimary)
 
                             Spacer()
 
@@ -44,7 +45,7 @@ struct WorkoutDetailView: View {
                                 showingEditWorkout = true
                             }) {
                                 Image(systemName: "pencil")
-                                    .foregroundColor(AppColors.primary)
+                                    .foregroundColor(AppColors.textPrimary)
                             }
 
                             Button(action: {
@@ -59,7 +60,7 @@ struct WorkoutDetailView: View {
                         if !workout.notes.isEmpty {
                             Text(workout.notes)
                                 .font(AppFonts.body)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(AppColors.textSecondary)
                                 .padding(.bottom, AppSpacing.small)
                         }
 
@@ -76,6 +77,7 @@ struct WorkoutDetailView: View {
             }
             .padding()
         }
+        .background(AppColors.background)
         .navigationTitle("Workout Details")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Delete Workout?", isPresented: $showingDeleteAlert) {
@@ -112,11 +114,12 @@ struct ExerciseDetailView: View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
             Text(exercise.exerciseName)
                 .font(AppFonts.title)
+                .foregroundColor(AppColors.textPrimary)
 
             if !exercise.notes.isEmpty {
                 Text(exercise.notes)
                     .font(AppFonts.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary)
                     .italic()
             }
 
@@ -126,7 +129,7 @@ struct ExerciseDetailView: View {
                         HStack {
                             Text("Set \(set.setNumber)")
                                 .font(AppFonts.body)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(AppColors.textSecondary)
                                 .frame(width: 60, alignment: .leading)
 
                             if set.setTypeEnum == .weightReps {
@@ -134,20 +137,22 @@ struct ExerciseDetailView: View {
                                     HStack(spacing: AppSpacing.extraSmall) {
                                         Text("\(set.weight ?? 0, specifier: "%.1f")")
                                             .font(AppFonts.body)
+                                            .foregroundColor(AppColors.textPrimary)
                                         Text("kg")
                                             .font(AppFonts.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(AppColors.textSecondary)
                                     }
 
                                     Text("×")
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(AppColors.textSecondary)
 
                                     HStack(spacing: AppSpacing.extraSmall) {
                                         Text("\(set.reps ?? 0)")
                                             .font(AppFonts.body)
+                                            .foregroundColor(AppColors.textPrimary)
                                         Text("reps")
                                             .font(AppFonts.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(AppColors.textSecondary)
                                     }
                                 }
                             } else {
@@ -155,20 +160,22 @@ struct ExerciseDetailView: View {
                                     HStack(spacing: AppSpacing.extraSmall) {
                                         Text("Level")
                                             .font(AppFonts.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(AppColors.textSecondary)
                                         Text("\(set.level ?? 0)")
                                             .font(AppFonts.body)
+                                            .foregroundColor(AppColors.textPrimary)
                                     }
 
                                     Text("•")
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(AppColors.textSecondary)
 
                                     HStack(spacing: AppSpacing.extraSmall) {
                                         Text("\(set.duration ?? 0, specifier: "%.0f")")
                                             .font(AppFonts.body)
+                                            .foregroundColor(AppColors.textPrimary)
                                         Text("sec")
                                             .font(AppFonts.caption)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(AppColors.textSecondary)
                                     }
                                 }
                             }
