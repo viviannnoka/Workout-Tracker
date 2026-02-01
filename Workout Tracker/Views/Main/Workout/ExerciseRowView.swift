@@ -22,7 +22,7 @@ struct ExerciseRowView: View {
 
                 Button(action: onDelete) {
                     Image(systemName: "trash")
-                        .foregroundColor(.red)
+                        .foregroundColor(AppColors.danger)
                 }
             }
 
@@ -154,7 +154,7 @@ struct AddSetView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(weight.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                            .stroke(weight.isEmpty ? AppColors.danger.opacity(0.3) : Color.clear, lineWidth: 1)
                     )
 
                     CustomTextField(
@@ -165,7 +165,7 @@ struct AddSetView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(reps.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                            .stroke(reps.isEmpty ? AppColors.danger.opacity(0.3) : Color.clear, lineWidth: 1)
                     )
                 }
             } else {
@@ -178,7 +178,7 @@ struct AddSetView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(level.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                            .stroke(level.isEmpty ? AppColors.danger.opacity(0.3) : Color.clear, lineWidth: 1)
                     )
 
                     CustomTextField(
@@ -189,7 +189,7 @@ struct AddSetView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(duration.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                            .stroke(duration.isEmpty ? AppColors.danger.opacity(0.3) : Color.clear, lineWidth: 1)
                     )
                 }
             }
@@ -206,7 +206,7 @@ struct AddSetView: View {
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(numberOfSets.isEmpty ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+                        .stroke(numberOfSets.isEmpty ? AppColors.danger.opacity(0.3) : Color.clear, lineWidth: 1)
                 )
             }
 

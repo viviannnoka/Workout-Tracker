@@ -30,6 +30,7 @@ struct ProfileView: View {
 
                             Text(user.name)
                                 .font(AppFonts.largeTitle)
+                                .foregroundColor(AppColors.textPrimary)
                         }
                         .padding(.top, AppSpacing.large)
 
@@ -51,17 +52,19 @@ struct ProfileView: View {
                     } else {
                         Text("No profile found")
                             .font(AppFonts.body)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary)
                     }
                 }
                 .padding()
             }
+            .background(AppColors.background)
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingEditProfile = true }) {
                         Image(systemName: "pencil")
+                            .foregroundColor(AppColors.textPrimary)
                     }
                 }
             }
@@ -82,12 +85,13 @@ struct ProfileInfoRow: View {
         HStack {
             Text(label)
                 .font(AppFonts.body)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary)
 
             Spacer()
 
             Text(value)
                 .font(AppFonts.headline)
+                .foregroundColor(AppColors.textPrimary)
         }
     }
 }

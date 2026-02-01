@@ -9,7 +9,7 @@ struct PrimaryButton: View {
         Button(action: action) {
             Text(title)
                 .font(AppFonts.headline)
-                .foregroundColor(.white)
+                .foregroundColor(AppColors.background)
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(isEnabled ? AppColors.primary : AppColors.secondary)

@@ -16,11 +16,12 @@ struct WelcomeView: View {
             VStack(spacing: AppSpacing.medium) {
                 Text("Welcome to Workout Tracker")
                     .font(AppFonts.largeTitle)
+                    .foregroundColor(AppColors.textPrimary)
                     .multilineTextAlignment(.center)
 
                 Text("Track your workouts, monitor your progress, and achieve your fitness goals.")
                     .font(AppFonts.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
             }
 
@@ -31,5 +32,7 @@ struct WelcomeView: View {
             }
         }
         .padding(AppSpacing.large)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.background)
     }
 }

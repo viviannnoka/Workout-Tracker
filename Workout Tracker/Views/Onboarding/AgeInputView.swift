@@ -8,10 +8,11 @@ struct AgeInputView: View {
             VStack(alignment: .leading, spacing: AppSpacing.medium) {
                 Text("How old are you?")
                     .font(AppFonts.largeTitle)
+                    .foregroundColor(AppColors.textPrimary)
 
                 Text("This helps us provide age-appropriate guidance.")
                     .font(AppFonts.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -31,5 +32,7 @@ struct AgeInputView: View {
             )
         }
         .padding(AppSpacing.large)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.background)
     }
 }

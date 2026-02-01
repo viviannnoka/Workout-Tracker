@@ -10,14 +10,18 @@ struct CustomTextField: View {
         VStack(alignment: .leading, spacing: AppSpacing.small) {
             Text(title)
                 .font(AppFonts.headline)
-                .foregroundColor(.primary)
+                .foregroundColor(AppColors.textPrimary)
 
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
-                .textFieldStyle(.roundedBorder)
-                .padding(.vertical, AppSpacing.small)
+                .foregroundColor(AppColors.textPrimary)
+                .padding()
                 .background(AppColors.secondaryBackground)
                 .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(AppColors.border, lineWidth: 1)
+                )
         }
     }
 }

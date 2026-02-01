@@ -60,7 +60,7 @@ struct SetRowView: View {
 
             Button(action: onDelete) {
                 Image(systemName: "minus.circle")
-                    .foregroundColor(.red)
+                    .foregroundColor(AppColors.danger)
             }
         }
         .padding(AppSpacing.small)

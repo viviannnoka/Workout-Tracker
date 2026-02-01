@@ -25,9 +25,12 @@ struct WorkoutListView: View {
                             NavigationLink(destination: WorkoutDetailView(date: date, workouts: dayWorkouts)) {
                                 WorkoutDateRowView(date: date, workouts: dayWorkouts)
                             }
+                            .listRowBackground(AppColors.secondaryBackground)
                         }
                         .onDelete(perform: deleteWorkoutGroup)
                     }
+                    .scrollContentBackground(.hidden)
+                    .background(AppColors.background)
                 }
             }
             .navigationTitle("Workout History")
@@ -51,18 +54,20 @@ struct WorkoutListView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 80, height: 80)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary)
 
             Text("No workouts yet")
                 .font(AppFonts.title)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textPrimary)
 
             Text("Tap the + button to log your first workout")
                 .font(AppFonts.body)
-                .foregroundColor(.secondary)
+                .foregroundColor(AppColors.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .padding(AppSpacing.extraLarge)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.background)
     }
 
     private func deleteWorkoutGroup(at offsets: IndexSet) {
@@ -87,6 +92,7 @@ struct WorkoutDateRowView: View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
             Text(date, style: .date)
                 .font(AppFonts.headline)
+                .foregroundColor(AppColors.textPrimary)
 
             ForEach(Array(sortedWorkouts.enumerated()), id: \.element.id) { index, workout in
                 VStack(alignment: .leading, spacing: AppSpacing.small) {
@@ -94,16 +100,17 @@ struct WorkoutDateRowView: View {
                         Text("Session \(index + 1)")
                             .font(AppFonts.body)
                             .fontWeight(.semibold)
+                            .foregroundColor(AppColors.textPrimary)
 
                         Text(workout.date, style: .time)
                             .font(AppFonts.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary)
                     }
 
                     if let exercises = workout.exercises, !exercises.isEmpty {
                         Text(exercises.map { $0.exerciseName }.joined(separator: ", "))
                             .font(AppFonts.body)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(AppColors.textSecondary)
                             .lineLimit(1)
                     }
                 }

@@ -8,10 +8,11 @@ struct NameInputView: View {
             VStack(alignment: .leading, spacing: AppSpacing.medium) {
                 Text("What's your name?")
                     .font(AppFonts.largeTitle)
+                    .foregroundColor(AppColors.textPrimary)
 
                 Text("We'll use this to personalize your experience.")
                     .font(AppFonts.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -30,5 +31,7 @@ struct NameInputView: View {
             )
         }
         .padding(AppSpacing.large)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.background)
     }
 }

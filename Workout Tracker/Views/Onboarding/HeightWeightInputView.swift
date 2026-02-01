@@ -8,17 +8,18 @@ struct HeightWeightInputView: View {
             VStack(alignment: .leading, spacing: AppSpacing.medium) {
                 Text("Your measurements")
                     .font(AppFonts.largeTitle)
+                    .foregroundColor(AppColors.textPrimary)
 
                 Text("Help us track your fitness journey.")
                     .font(AppFonts.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(AppColors.textSecondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack(alignment: .leading, spacing: AppSpacing.small) {
                 Text("Height *")
                     .font(AppFonts.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(AppColors.textPrimary)
 
                 HStack(spacing: AppSpacing.medium) {
                     TextField("Enter height", text: $viewModel.height)
@@ -38,7 +39,7 @@ struct HeightWeightInputView: View {
             VStack(alignment: .leading, spacing: AppSpacing.small) {
                 Text("Weight *")
                     .font(AppFonts.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(AppColors.textPrimary)
 
                 HStack(spacing: AppSpacing.medium) {
                     TextField("Enter weight", text: $viewModel.weight)
@@ -64,5 +65,7 @@ struct HeightWeightInputView: View {
             )
         }
         .padding(AppSpacing.large)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppColors.background)
     }
 }

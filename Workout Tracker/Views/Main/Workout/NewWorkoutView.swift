@@ -18,9 +18,11 @@ struct NewWorkoutView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.medium) {
                         DatePicker("Date", selection: $workoutDate, displayedComponents: [.date])
                             .datePickerStyle(.compact)
+                            .colorScheme(.dark)
 
                         DatePicker("Time", selection: $workoutDate, displayedComponents: [.hourAndMinute])
                             .datePickerStyle(.compact)
+                            .colorScheme(.dark)
                     }
                     .padding()
                     .background(AppColors.secondaryBackground)
@@ -29,10 +31,18 @@ struct NewWorkoutView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.small) {
                         Text("Exercise Name *")
                             .font(AppFonts.headline)
+                            .foregroundColor(AppColors.textPrimary)
 
                         HStack {
                             TextField("e.g., Bench Press", text: $currentExerciseName)
-                                .textFieldStyle(.roundedBorder)
+                                .foregroundColor(AppColors.textPrimary)
+                                .padding()
+                                .background(AppColors.secondaryBackground)
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(AppColors.border, lineWidth: 1)
+                                )
 
                             Button(action: addExercise) {
                                 Image(systemName: "plus.circle.fill")
@@ -55,12 +65,18 @@ struct NewWorkoutView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.small) {
                         Text("Workout Notes")
                             .font(AppFonts.headline)
+                            .foregroundColor(AppColors.textPrimary)
 
                         TextEditor(text: $workoutNotes)
+                            .foregroundColor(AppColors.textPrimary)
                             .frame(height: 100)
                             .padding(AppSpacing.small)
                             .background(AppColors.secondaryBackground)
                             .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(AppColors.border, lineWidth: 1)
+                            )
                     }
 
                     PrimaryButton(
@@ -72,6 +88,7 @@ struct NewWorkoutView: View {
                 }
                 .padding()
             }
+            .background(AppColors.background)
             .navigationTitle("New Workout")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -79,6 +96,7 @@ struct NewWorkoutView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(AppColors.textPrimary)
                 }
             }
         }

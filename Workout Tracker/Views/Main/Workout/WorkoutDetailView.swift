@@ -52,7 +52,7 @@ struct WorkoutDetailView: View {
                                 showingDeleteAlert = true
                             }) {
                                 Image(systemName: "trash")
-                                    .foregroundColor(.red)
+                                    .foregroundColor(AppColors.danger)
                             }
                         }
 

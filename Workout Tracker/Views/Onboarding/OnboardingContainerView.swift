@@ -21,6 +21,8 @@ struct OnboardingContainerView: View {
                     WelcomeView(viewModel: viewModel)
                 }
             }
+            .background(AppColors.background)
+            .preferredColorScheme(.dark)
         }
     }
 }
