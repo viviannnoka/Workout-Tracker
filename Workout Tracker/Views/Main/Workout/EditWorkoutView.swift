@@ -40,8 +40,12 @@ struct EditWorkoutView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: AppSpacing.large) {
+            ZStack {
+                AppColors.background
+                    .ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: AppSpacing.large) {
                     VStack(alignment: .leading, spacing: AppSpacing.medium) {
                         DatePicker("Date", selection: $workoutDate, displayedComponents: [.date])
                             .datePickerStyle(.compact)
@@ -88,9 +92,9 @@ struct EditWorkoutView: View {
                     )
                     .padding(.top, AppSpacing.medium)
                 }
-                .padding()
+                    .padding()
+                }
             }
-            .background(AppColors.background)
             .navigationTitle("Edit Workout")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

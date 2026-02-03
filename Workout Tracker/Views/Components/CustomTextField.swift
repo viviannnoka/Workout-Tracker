@@ -15,12 +15,14 @@ struct CustomTextField: View {
             TextField(placeholder, text: $text)
                 .keyboardType(keyboardType)
                 .foregroundColor(AppColors.textPrimary)
+                .accentColor(AppColors.textPrimary)
+                .autocorrectionDisabled()
                 .padding()
                 .background(AppColors.secondaryBackground)
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(AppColors.border, lineWidth: 1)
+                        .stroke(AppColors.border, lineWidth: 2)
                 )
         }
     }

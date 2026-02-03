@@ -18,8 +18,12 @@ struct WorkoutDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: AppSpacing.large) {
+        ZStack {
+            AppColors.background
+                .ignoresSafeArea()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.large) {
                 VStack(alignment: .leading, spacing: AppSpacing.small) {
                     Text("Date")
                         .font(AppFonts.caption)
@@ -75,9 +79,9 @@ struct WorkoutDetailView: View {
                     .cornerRadius(12)
                 }
             }
-            .padding()
+                .padding()
+            }
         }
-        .background(AppColors.background)
         .navigationTitle("Workout Details")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Delete Workout?", isPresented: $showingDeleteAlert) {

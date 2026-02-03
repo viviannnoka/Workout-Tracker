@@ -71,25 +71,25 @@ struct ExerciseRowView: View {
             addSetSheet
         }
         .sheet(isPresented: $showingEditExercise) {
-            editExerciseSheet
-        }
-    }
-
-    private var editExerciseSheet: some View {
-        NavigationStack {
-            EditExerciseView(exercise: $exercise)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            showingEditExercise = false
+            NavigationStack {
+                EditExerciseView(exercise: $exercise)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") {
+                                showingEditExercise = false
+                            }
+                            .foregroundColor(.white)
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") {
+                                showingEditExercise = false
+                            }
+                            .foregroundColor(.white)
                         }
                     }
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") {
-                            showingEditExercise = false
-                        }
-                    }
-                }
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -264,36 +264,41 @@ struct EditExerciseView: View {
     @Binding var exercise: ExerciseData
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: AppSpacing.large) {
-                CustomTextField(
-                    title: "Exercise Name",
-                    placeholder: "e.g., Bench Press",
-                    text: $exercise.name
-                )
+        VStack(alignment: .leading, spacing: 24) {
+            // Exercise Name Section
+            VStack(alignment: .leading, spacing: 8) {
+                Text("EXERCISE NAME")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .fontWeight(.semibold)
 
-                VStack(alignment: .leading, spacing: AppSpacing.small) {
-                    Text("Exercise Notes")
-                        .font(AppFonts.headline)
-                        .foregroundColor(AppColors.textPrimary)
-
-                    TextEditor(text: $exercise.notes)
-                        .foregroundColor(AppColors.textPrimary)
-                        .frame(height: 100)
-                        .padding(AppSpacing.small)
-                        .background(AppColors.secondaryBackground)
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(AppColors.border, lineWidth: 1)
-                        )
-                }
-
-                Spacer()
+                TextField("e.g., Bench Press", text: $exercise.name)
+                    .textFieldStyle(.roundedBorder)
+                    .colorScheme(.dark)
             }
-            .padding()
+
+            // Exercise Notes Section
+            VStack(alignment: .leading, spacing: 8) {
+                Text("EXERCISE NOTES")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .fontWeight(.semibold)
+
+                TextEditor(text: $exercise.notes)
+                    .frame(height: 120)
+                    .colorScheme(.dark)
+                    .cornerRadius(5)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                    )
+            }
+
+            Spacer()
         }
-        .background(AppColors.background)
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
         .navigationTitle("Edit Exercise")
         .navigationBarTitleDisplayMode(.inline)
     }
