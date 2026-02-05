@@ -11,6 +11,7 @@ struct EditWorkoutView: View {
     @State private var workoutNotes: String
     @State private var exercises: [ExerciseData] = []
     @State private var currentExerciseName: String = ""
+    @State private var newlyAddedExerciseId: UUID?
 
     init(workout: WorkoutSession) {
         self.workout = workout
@@ -75,10 +76,11 @@ struct EditWorkoutView: View {
                     }
 
                     if !exercises.isEmpty {
-                        ForEach(exercises.indices, id: \.self) { index in
+                        ForEach(exercises.indices.reversed(), id: \.self) { index in
                             ExerciseRowView(
                                 exercise: $exercises[index],
-                                onDelete: { deleteExercise(at: index) }
+                                onDelete: { deleteExercise(at: index) },
+                                autoShowAddSet: exercises[index].id == newlyAddedExerciseId
                             )
                         }
                     }
@@ -124,6 +126,7 @@ struct EditWorkoutView: View {
     private func addExercise() {
         let exercise = ExerciseData(name: currentExerciseName.trimmingCharacters(in: .whitespaces))
         exercises.append(exercise)
+        newlyAddedExerciseId = exercise.id
         currentExerciseName = ""
     }
 

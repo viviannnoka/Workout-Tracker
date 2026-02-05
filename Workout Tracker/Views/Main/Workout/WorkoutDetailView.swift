@@ -67,7 +67,7 @@ struct WorkoutDetailView: View {
                         }
 
                         if let exercises = workout.exercises, !exercises.isEmpty {
-                            ForEach(exercises) { exercise in
+                            ForEach(exercises.sorted(by: { $0.createdAt > $1.createdAt })) { exercise in
                                 ExerciseDetailView(exercise: exercise)
                             }
                         }

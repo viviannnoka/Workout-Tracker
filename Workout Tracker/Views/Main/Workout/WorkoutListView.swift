@@ -5,10 +5,31 @@ struct WorkoutListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \WorkoutSession.date, order: .reverse) private var workouts: [WorkoutSession]
     @State private var showingNewWorkout = false
+    @State private var searchText = ""
+
+    var filteredWorkouts: [WorkoutSession] {
+        if searchText.isEmpty {
+            return workouts
+        } else {
+            return workouts.filter { workout in
+                // Search in workout notes
+                if workout.notes.localizedCaseInsensitiveContains(searchText) {
+                    return true
+                }
+                // Search in exercise names
+                if let exercises = workout.exercises {
+                    return exercises.contains { exercise in
+                        exercise.exerciseName.localizedCaseInsensitiveContains(searchText)
+                    }
+                }
+                return false
+            }
+        }
+    }
 
     var groupedWorkouts: [(Date, [WorkoutSession])] {
         let calendar = Calendar.current
-        let grouped = Dictionary(grouping: workouts) { workout in
+        let grouped = Dictionary(grouping: filteredWorkouts) { workout in
             calendar.startOfDay(for: workout.date)
         }
         return grouped.sorted { $0.key > $1.key }
@@ -45,6 +66,7 @@ struct WorkoutListView: View {
             .sheet(isPresented: $showingNewWorkout) {
                 NewWorkoutView()
             }
+            .searchable(text: $searchText, prompt: "Search exercises or notes")
         }
     }
 
@@ -97,7 +119,7 @@ struct WorkoutDateRowView: View {
             ForEach(Array(sortedWorkouts.enumerated()), id: \.element.id) { index, workout in
                 VStack(alignment: .leading, spacing: AppSpacing.small) {
                     HStack {
-                        Text("Session \(index + 1)")
+                        Text("Session \(sortedWorkouts.count - index)")
                             .font(AppFonts.body)
                             .fontWeight(.semibold)
                             .foregroundColor(AppColors.textPrimary)

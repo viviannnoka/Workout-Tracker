@@ -3,22 +3,19 @@ import SwiftUI
 struct ExerciseRowView: View {
     @Binding var exercise: ExerciseData
     let onDelete: () -> Void
+    var autoShowAddSet: Bool = false
 
     @State private var showingAddSet = false
-    @State private var showingEditExercise = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
             HStack {
-                Text(exercise.name)
+                TextField("Exercise name", text: $exercise.name)
                     .font(AppFonts.title)
+                    .textFieldStyle(.plain)
+                    .foregroundColor(AppColors.textPrimary)
 
                 Spacer()
-
-                Button(action: { showingEditExercise = true }) {
-                    Image(systemName: "pencil")
-                        .foregroundColor(AppColors.primary)
-                }
 
                 Button(action: onDelete) {
                     Image(systemName: "trash")
@@ -70,26 +67,10 @@ struct ExerciseRowView: View {
         .sheet(isPresented: $showingAddSet) {
             addSetSheet
         }
-        .sheet(isPresented: $showingEditExercise) {
-            NavigationStack {
-                EditExerciseView(exercise: $exercise)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") {
-                                showingEditExercise = false
-                            }
-                            .foregroundColor(.white)
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") {
-                                showingEditExercise = false
-                            }
-                            .foregroundColor(.white)
-                        }
-                    }
+        .onAppear {
+            if autoShowAddSet {
+                showingAddSet = true
             }
-            .presentationDetents([.large])
-            .presentationDragIndicator(.visible)
         }
     }
 
@@ -261,46 +242,3 @@ struct AddSetView: View {
     }
 }
 
-struct EditExerciseView: View {
-    @Binding var exercise: ExerciseData
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            // Exercise Name Section
-            VStack(alignment: .leading, spacing: 8) {
-                Text("EXERCISE NAME")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .fontWeight(.semibold)
-
-                TextField("e.g., Bench Press", text: $exercise.name)
-                    .textFieldStyle(.roundedBorder)
-                    .colorScheme(.dark)
-            }
-
-            // Exercise Notes Section
-            VStack(alignment: .leading, spacing: 8) {
-                Text("EXERCISE NOTES")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .fontWeight(.semibold)
-
-                TextEditor(text: $exercise.notes)
-                    .frame(height: 120)
-                    .colorScheme(.dark)
-                    .cornerRadius(5)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                    )
-            }
-
-            Spacer()
-        }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-        .navigationTitle("Edit Exercise")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
