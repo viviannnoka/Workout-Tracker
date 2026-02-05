@@ -130,7 +130,8 @@ struct WorkoutDateRowView: View {
                     }
 
                     if let exercises = workout.exercises, !exercises.isEmpty {
-                        Text(exercises.map { $0.exerciseName }.joined(separator: ", "))
+                        let sortedExercises = exercises.sorted(by: { $0.createdAt > $1.createdAt })
+                        Text(sortedExercises.map { $0.exerciseName }.joined(separator: ", "))
                             .font(AppFonts.body)
                             .foregroundColor(AppColors.textSecondary)
                             .lineLimit(1)

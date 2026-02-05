@@ -18,10 +18,11 @@ struct EditWorkoutView: View {
         _workoutDate = State(initialValue: workout.date)
         _workoutNotes = State(initialValue: workout.notes)
 
-        // Convert SwiftData exercises to ExerciseData
+        // Convert SwiftData exercises to ExerciseData, sorted by createdAt descending (newest first)
         var exercisesData: [ExerciseData] = []
         if let workoutExercises = workout.exercises {
-            for exercise in workoutExercises {
+            let sortedExercises = workoutExercises.sorted { $0.createdAt > $1.createdAt }
+            for exercise in sortedExercises {
                 var sets: [SetData] = []
                 if let exerciseSets = exercise.sets {
                     sets = exerciseSets.sorted { $0.setNumber < $1.setNumber }.map { set in
@@ -76,7 +77,7 @@ struct EditWorkoutView: View {
                     }
 
                     if !exercises.isEmpty {
-                        ForEach(exercises.indices.reversed(), id: \.self) { index in
+                        ForEach(exercises.indices, id: \.self) { index in
                             ExerciseRowView(
                                 exercise: $exercises[index],
                                 onDelete: { deleteExercise(at: index) },
@@ -125,7 +126,7 @@ struct EditWorkoutView: View {
 
     private func addExercise() {
         let exercise = ExerciseData(name: currentExerciseName.trimmingCharacters(in: .whitespaces))
-        exercises.append(exercise)
+        exercises.insert(exercise, at: 0)  // Insert at beginning to maintain newest-first order
         newlyAddedExerciseId = exercise.id
         currentExerciseName = ""
     }
