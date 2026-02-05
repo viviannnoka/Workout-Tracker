@@ -14,6 +14,6 @@ struct Workout_TrackerApp: App {
         WindowGroup {
             AppCoordinator()
         }
-        .modelContainer(for: [UserProfile.self, WorkoutSession.self, ExerciseEntry.self, ExerciseSet.self])
+        .modelContainer(for: [WorkoutSession.self, ExerciseEntry.self, ExerciseSet.self])
     }
 }

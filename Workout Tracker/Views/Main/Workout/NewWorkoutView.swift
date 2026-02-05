@@ -4,7 +4,6 @@ import SwiftData
 struct NewWorkoutView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Query private var users: [UserProfile]
 
     @State private var workoutDate = Date()
     @State private var currentExerciseName: String = ""
@@ -120,10 +119,7 @@ struct NewWorkoutView: View {
     }
 
     private func saveWorkout() {
-        guard let user = users.first else { return }
-
         let workout = WorkoutSession(date: workoutDate, notes: workoutNotes)
-        workout.user = user
 
         for exerciseData in exercises {
             let exercise = ExerciseEntry(exerciseName: exerciseData.name, notes: exerciseData.notes)

@@ -6,8 +6,6 @@ final class WorkoutSession {
     var date: Date
     var notes: String
 
-    var user: UserProfile?
-
     @Relationship(deleteRule: .cascade, inverse: \ExerciseEntry.workoutSession)
     var exercises: [ExerciseEntry]?
 
