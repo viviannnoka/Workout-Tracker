@@ -11,7 +11,6 @@ struct WorkoutDetailView: View {
     @State private var workoutToDelete: WorkoutSession?
     @State private var showingDeleteAlert = false
     @State private var workoutToEdit: WorkoutSession?
-    @State private var showingEditWorkout = false
 
     var sortedWorkouts: [WorkoutSession] {
         workouts.sorted { $0.date > $1.date }
@@ -46,7 +45,6 @@ struct WorkoutDetailView: View {
 
                             Button(action: {
                                 workoutToEdit = workout
-                                showingEditWorkout = true
                             }) {
                                 Image(systemName: "pencil")
                                     .foregroundColor(AppColors.textPrimary)
@@ -92,10 +90,12 @@ struct WorkoutDetailView: View {
         } message: {
             Text("This workout session will be permanently deleted.")
         }
-        .sheet(isPresented: $showingEditWorkout) {
-            if let workout = workoutToEdit {
+        .sheet(item: $workoutToEdit) { workout in
+            NavigationStack {
                 EditWorkoutView(workout: workout)
             }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -174,10 +174,10 @@ struct ExerciseDetailView: View {
                                         .foregroundColor(AppColors.textSecondary)
 
                                     HStack(spacing: AppSpacing.extraSmall) {
-                                        Text("\(set.duration ?? 0, specifier: "%.0f")")
+                                        Text("\((set.duration ?? 0) / 60, specifier: "%.1f")")
                                             .font(AppFonts.body)
                                             .foregroundColor(AppColors.textPrimary)
-                                        Text("sec")
+                                        Text("min")
                                             .font(AppFonts.caption)
                                             .foregroundColor(AppColors.textSecondary)
                                     }

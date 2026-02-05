@@ -10,6 +10,7 @@ struct EditWorkoutView: View {
     @State private var workoutDate: Date
     @State private var workoutNotes: String
     @State private var exercises: [ExerciseData] = []
+    @State private var currentExerciseName: String = ""
 
     init(workout: WorkoutSession) {
         self.workout = workout
@@ -39,13 +40,8 @@ struct EditWorkoutView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                AppColors.background
-                    .ignoresSafeArea()
-
-                ScrollView {
-                    VStack(spacing: AppSpacing.large) {
+        ScrollView {
+            VStack(spacing: AppSpacing.large) {
                     VStack(alignment: .leading, spacing: AppSpacing.medium) {
                         DatePicker("Date", selection: $workoutDate, displayedComponents: [.date])
                             .datePickerStyle(.compact)
@@ -59,6 +55,25 @@ struct EditWorkoutView: View {
                     .background(AppColors.secondaryBackground)
                     .cornerRadius(12)
 
+                    VStack(alignment: .leading, spacing: AppSpacing.small) {
+                        Text("Exercise Name *")
+                            .font(AppFonts.headline)
+                            .foregroundColor(.white)
+
+                        HStack {
+                            TextField("e.g., Bench Press", text: $currentExerciseName)
+                                .textFieldStyle(.roundedBorder)
+                                .colorScheme(.dark)
+
+                            Button(action: addExercise) {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundColor(.white)
+                                    .font(.title2)
+                            }
+                            .disabled(currentExerciseName.trimmingCharacters(in: .whitespaces).isEmpty)
+                        }
+                    }
+
                     if !exercises.isEmpty {
                         ForEach(exercises.indices, id: \.self) { index in
                             ExerciseRowView(
@@ -71,17 +86,15 @@ struct EditWorkoutView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.small) {
                         Text("Workout Notes")
                             .font(AppFonts.headline)
-                            .foregroundColor(AppColors.textPrimary)
+                            .foregroundColor(.white)
 
                         TextEditor(text: $workoutNotes)
-                            .foregroundColor(AppColors.textPrimary)
                             .frame(height: 100)
-                            .padding(AppSpacing.small)
-                            .background(AppColors.secondaryBackground)
-                            .cornerRadius(8)
+                            .colorScheme(.dark)
+                            .cornerRadius(5)
                             .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(AppColors.border, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: 5)
+                                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                             )
                     }
 
@@ -92,20 +105,26 @@ struct EditWorkoutView: View {
                     )
                     .padding(.top, AppSpacing.medium)
                 }
-                    .padding()
+                .padding()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
+        .navigationTitle("Edit Workout")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    dismiss()
                 }
-            }
-            .navigationTitle("Edit Workout")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .foregroundColor(AppColors.textPrimary)
-                }
+                .foregroundColor(.white)
             }
         }
+    }
+
+    private func addExercise() {
+        let exercise = ExerciseData(name: currentExerciseName.trimmingCharacters(in: .whitespaces))
+        exercises.append(exercise)
+        currentExerciseName = ""
     }
 
     private func deleteExercise(at index: Int) {

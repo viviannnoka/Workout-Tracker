@@ -47,9 +47,9 @@ struct SetRowView: View {
                         .foregroundColor(.secondary)
 
                     HStack(spacing: AppSpacing.extraSmall) {
-                        Text("\(set.duration ?? 0, specifier: "%.0f")")
+                        Text("\((set.duration ?? 0) / 60, specifier: "%.1f")")
                             .font(AppFonts.body)
-                        Text("sec")
+                        Text("min")
                             .font(AppFonts.caption)
                             .foregroundColor(.secondary)
                     }

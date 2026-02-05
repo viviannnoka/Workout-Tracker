@@ -182,7 +182,7 @@ struct AddSetView: View {
                     )
 
                     CustomTextField(
-                        title: "Duration (seconds) *",
+                        title: "Duration (minutes) *",
                         placeholder: "Enter duration",
                         text: $duration,
                         keyboardType: .decimalPad
@@ -231,8 +231,9 @@ struct AddSetView: View {
                 onAdd(setType, weightValue, repsValue, nil, nil, setsCount)
             }
         } else {
-            if let levelValue = Int(level), let durationValue = Double(duration) {
-                onAdd(setType, nil, nil, levelValue, durationValue, setsCount)
+            if let levelValue = Int(level), let durationMinutes = Double(duration) {
+                let durationSeconds = durationMinutes * 60 // Convert minutes to seconds
+                onAdd(setType, nil, nil, levelValue, durationSeconds, setsCount)
             }
         }
     }
