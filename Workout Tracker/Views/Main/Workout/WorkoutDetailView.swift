@@ -142,7 +142,7 @@ struct ExerciseDetailView: View {
                                         Text("\(set.weight ?? 0, specifier: "%.1f")")
                                             .font(AppFonts.body)
                                             .foregroundColor(AppColors.textPrimary)
-                                        Text("kg")
+                                        Text("lbs")
                                             .font(AppFonts.caption)
                                             .foregroundColor(AppColors.textSecondary)
                                     }

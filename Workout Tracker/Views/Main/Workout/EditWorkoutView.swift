@@ -77,7 +77,7 @@ struct EditWorkoutView: View {
                     }
 
                     if !exercises.isEmpty {
-                        ForEach(exercises.indices, id: \.self) { index in
+                        ForEach(Array(exercises.enumerated()), id: \.element.id) { index, _ in
                             ExerciseRowView(
                                 exercise: $exercises[index],
                                 onDelete: { deleteExercise(at: index) },

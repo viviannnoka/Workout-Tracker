@@ -17,7 +17,7 @@ struct SetRowView: View {
                     HStack(spacing: AppSpacing.extraSmall) {
                         Text("\(set.weight ?? 0, specifier: "%.1f")")
                             .font(AppFonts.body)
-                        Text("kg")
+                        Text("lbs")
                             .font(AppFonts.caption)
                             .foregroundColor(.secondary)
                     }

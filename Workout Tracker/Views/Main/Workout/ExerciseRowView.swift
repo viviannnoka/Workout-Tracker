@@ -128,7 +128,7 @@ struct AddSetView: View {
             if setType == .weightReps {
                 VStack(alignment: .leading, spacing: AppSpacing.small) {
                     CustomTextField(
-                        title: "Weight (kg) *",
+                        title: "Weight (lbs) *",
                         placeholder: "Enter weight",
                         text: $weight,
                         keyboardType: .decimalPad
